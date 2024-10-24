@@ -1,0 +1,103 @@
+﻿<UserControl x:Class="Training_Quest3.View.UserInfoCodingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:Training_Quest3.View"
+             xmlns:components="clr-namespace:Training_Quest3.Component"
+             mc:Ignorable="d" 
+            >
+    
+    <dx:Interaction.Behaviors>
+        <dx:EventToCommand EventName="Loaded" Command="{Binding LoadUserCommand}"/>
+    </dx:Interaction.Behaviors>
+
+    
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Add record"
+       Grid.ColumnSpan="2"
+       Background="#FF6161B0" Foreground="White"
+       FontWeight="Bold"
+       VerticalAlignment="Top"
+       Padding="10"
+       Grid.Row="0" />
+
+        <Grid Grid.Row="1" Margin="5">
+            <ScrollViewer>
+                <StackPanel Background="White" >
+                    <!--Name-->
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5" >
+                        <TextBlock Text="First Name:" Padding="5" />
+                        <TextBox MinWidth="100" Text="{Binding AddFirstName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Bottom" Width="150" Margin="24 0 0 0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5" >
+                        <TextBlock Text="Middle Name:" Padding="5" />
+                        <TextBox MinWidth="100" Text="{Binding AddMiddleName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Bottom" Width="150" Margin="10 0 0 0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
+                        <TextBlock Text="Last Name:" Padding="5"/>
+                        <TextBox MinWidth="100" Text="{Binding AddLastName, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Bottom"  Width="150" Margin="26 0 0 0"/>
+                    </StackPanel>
+
+                    <!--Date of Birth-->
+                    <StackPanel Orientation="Horizontal" >
+                        <TextBlock Text="Date Of Birth:" Padding="5"/>
+                        <DatePicker x:Name="Birthday" MinWidth="100" SelectedDate="{Binding AddDateofBirth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="13 0 0 0"/>
+                    </StackPanel>
+
+                    <!--Age-->
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Age:" Padding="5"/>
+                        <TextBlock MinWidth="100" Text="{Binding AddAge, UpdateSourceTrigger=PropertyChanged}" FontSize="15" Width="150" Margin="62 2 0 0"/>
+                    </StackPanel>
+
+                    <!--Address-->
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                        <TextBlock Text="Address:" Padding="5"/>
+                        <TextBox Text="{Binding AddAddress, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Bottom" Width="150" Height="50" Margin="40 0 0 0" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                   
+                    <!--Username-->
+                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
+                        <TextBlock Text="Username:" Padding="5"/>
+                        <TextBox MinWidth="100" Text="{Binding AddUserName, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Bottom" Width="150" Margin="29 0 0 0"/>
+                    </StackPanel>
+
+                    <!--Password-->
+                    <StackPanel Orientation="Vertical" >
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Password:" Padding="5"/>
+                            <components:BindablePasswordBox x:Name="PasswordBox" Grid.Column="1" Margin="33,0,0,0" Width="150" 
+                                                        Password="{Binding AddPassword, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                        </StackPanel>
+                        <StackPanel Margin="93 -1 0 0">
+                            <Label Content="{Binding ElementName=PasswordBox, Path=(Validation.Errors)[0].ErrorContent}" FontSize="12" Foreground="Red" />
+                        </StackPanel>
+
+                    </StackPanel>
+
+                   
+
+
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+
+
+
+
+
+
+    </Grid>
+</UserControl>

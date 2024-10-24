@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="Training_Quest3.View.UserInfoListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Training_Quest3.View"
+             xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" 
+             mc:Ignorable="d" 
+             >
+    <Grid>
+        <!--Datagrid-->
+        <syncfusion:SfDataGrid Grid.Row="3" Margin="5"
+                                x:Name="UserDataGridControl"
+                                ItemsSource="{Binding CodingRecordsCollection, UpdateSourceTrigger=PropertyChanged}"
+                                SelectedItem="{Binding SelectedUserItem}"
+                                ScrollMode="Async"
+                                ColumnSizer="Auto" RowHeight="35" 
+                                AllowRowHoverHighlighting="True"
+                                AutoGenerateColumns="False"
+                                AllowDraggingColumns="True"
+                                AllowFiltering="True"
+                                AllowSorting="True"
+                                AllowResizingColumns="True">
+            <dx:Interaction.Behaviors>
+                <dx:EventToCommand EventName="Loaded" Command="{Binding LoadUserCommand}"/>
+                <dx:EventToCommand Command="{Binding DoubleClickGridCommand}"
+                                   EventName="CellDoubleTapped"
+                                   PassEventArgsToCommand="True" />
+            </dx:Interaction.Behaviors>
+            <syncfusion:SfDataGrid.Columns>
+                <syncfusion:GridTextColumn HeaderText="Id" MappingName="Id" TextAlignment="Center"/>
+                <syncfusion:GridTextColumn HeaderText="First Name" MappingName="FirstName" AllowEditing="False"/>
+                <syncfusion:GridTextColumn HeaderText="Middle Name" MappingName="MiddleName" AllowEditing="False"/>
+                <syncfusion:GridTextColumn HeaderText="Last Name" MappingName="LastName" AllowEditing="False"/>
+                <syncfusion:GridTextColumn HeaderText="Birth Month" MappingName="BD_month" AllowEditing="False"/>
+                <syncfusion:GridTextColumn HeaderText="Birth Day" MappingName="BD_day" AllowEditing="False"/>
+                <syncfusion:GridTextColumn HeaderText="Birth Year" MappingName="BD_year" AllowEditing="False"/>
+                <syncfusion:GridTextColumn HeaderText="Address" MappingName="Address" AllowEditing="False"/>
+                <syncfusion:GridTextColumn HeaderText="Favorite Animal" MappingName="FavAnimal" AllowEditing="False"/>
+                <syncfusion:GridTextColumn HeaderText="User Name" MappingName="UserName" AllowEditing="False"/>
+                <syncfusion:GridTextColumn HeaderText="Password" MappingName="Password" AllowEditing="False"/>
+
+            </syncfusion:SfDataGrid.Columns>
+        </syncfusion:SfDataGrid>
+    </Grid>
+</UserControl>
