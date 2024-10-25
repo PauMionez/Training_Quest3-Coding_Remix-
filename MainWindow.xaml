@@ -18,10 +18,6 @@
         <vm:MainViewModel/>
     </mah:MetroWindow.DataContext>
 
-    
-
-
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" MinHeight="20"/>

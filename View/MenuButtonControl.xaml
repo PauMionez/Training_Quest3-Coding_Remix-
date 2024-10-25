@@ -20,12 +20,12 @@
                     <Button Content="Export to Excel" Command="{Binding ExportCommand}" Margin="1" ToolTip="Export the Data to excel"/>
                 </RibbonGroup>
 
-                <RibbonGroup Header="Image Input" >
+                <RibbonGroup Header="Modify User Record" >
                     <Button Content="Update User Info" Command="{Binding UpdateCommand}" ToolTip="Add One Image" Margin="1"/>
                     <Button Content="Delete User Info" Command="{Binding DeleteCommand}" ToolTip="Delete the Selected Image" Margin="1"/>
                 </RibbonGroup>
 
-                <RibbonGroup Header="Image Input" >
+                <RibbonGroup Header="Add Suggestion Dictionary" >
                     <Button Content="Import Suggest favorite animal" Command="{Binding ImportSuggestCommand}" ToolTip="Select file .txt/.xlxs" Margin="1"/>
                 </RibbonGroup>
 
@@ -35,8 +35,10 @@
                 <!--Image Button-->
                 <RibbonGroup Header="Image Input" >
                     <Button Content="Select Image Folder" Command="{Binding SelectImageFolderCommand}" Margin="1" ToolTip="Select Image Folder only forlder shows" />
-                    <Button Content="Add Image" Command="{Binding AddImageCommand}" ToolTip="Add One Image" Margin="0 1 0 5"/>
-                    <Button Content="Delete Image" Command="{Binding DeleteImageCommand}" ToolTip="Delete the Selected Image" Margin="-50 30 0 0"/>
+                </RibbonGroup>
+                <RibbonGroup Header="Modify Image Record">
+                    <Button Content="Add Image" Command="{Binding AddImageCommand}" ToolTip="Add One Image" Margin="1"/>
+                    <Button Content="Delete Image" Command="{Binding DeleteImageCommand}" ToolTip="Delete the Selected Image" Margin="1"/>
                 </RibbonGroup>
             </RibbonTab>
             
