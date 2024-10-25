@@ -322,30 +322,31 @@ namespace Training_Quest3.ViewModel
             set { _userName = value; OnPropertyChanged(); }
         }
 
-        //private string _password;
-        //public string Password
-        //{
-        //    get { return _password; }
-        //    set
-        //    {
-        //        _password = value;
-
-        //        ClearErrors(nameof(Password));
-        //        if (_password.Length < 8)
-        //        {
-        //            AddError(nameof(Password), "Your Password is Weak!.");
-        //        }
-
-        //        OnPropertyChanged();
-        //    }
-        //}
-
         private string _password;
         public string Password
         {
             get { return _password; }
-            set { _password = value; OnPropertyChanged(); }
+            set
+            {
+                _password = value;
+
+                ClearErrors(nameof(Password));
+
+                if (!IsValidatePassword(_password))
+                {
+                    AddError(nameof(Password), $"{JoinedPasswordError}");
+                }
+
+                OnPropertyChanged();
+            }
         }
+
+        //private string _password;
+        //public string Password
+        //{
+        //    get { return _password; }
+        //    set { _password = value; OnPropertyChanged(); }
+        //}
 
         #region Coding Fields 
         public ObservableCollection<SuggestionModel> Suggestions { get; set; }
@@ -389,17 +390,7 @@ namespace Training_Quest3.ViewModel
                     IsUpdating = false;
                     return;
                 }
-                if (SelectedImageFolder == null)
-                {
-                    WarningMessage("Please Select Image Folder.", "Validation Error");
-                    return;
-                }
 
-                if (SelectedImageItem == null)
-                {
-                    WarningMessage("Please Select Image first before add new record.", "Validation Error");
-                    return;
-                }
                 #endregion
 
                 // Collect data
@@ -760,6 +751,7 @@ namespace Training_Quest3.ViewModel
                     ws.Range[1, 9].Text = "Favorite Animal";
                     ws.Range[1, 10].Text = "User Name";
                     ws.Range[1, 11].Text = "Password";
+                    ws.Range[1, 12].Text = "Image";
 
                     int lastCol = ws.UsedRange.LastColumn;
 
@@ -788,6 +780,7 @@ namespace Training_Quest3.ViewModel
                         ws[row + 2, 9].Text = record.FavAnimal;
                         ws[row + 2, 10].Text = record.UserName;
                         ws[row + 2, 11].Text = record.Password;
+                        ws[row + 2, 12].Text = record.ImageName;
 
                         //center align the data
                         for (int column = 1; column <= 100; column++)
@@ -840,8 +833,10 @@ namespace Training_Quest3.ViewModel
             if (!IsValidateDay(Birth_day) || string.IsNullOrWhiteSpace(Birth_day)) errors.Add("Invalid Birth Day.");
             if (!IsValidateMonth(Birth_month) || string.IsNullOrWhiteSpace(Birth_month)) errors.Add("Invalid Birth Month.");
             if (!IsValidateYear(Birth_year) || string.IsNullOrWhiteSpace(Birth_year)) errors.Add("Invalid Birth Year.");
-            if (string.IsNullOrWhiteSpace(Password)) errors.Add("Password cannot be empty");
-            if (!IsValidatePassword(Password)) errors.Add($"Invalid Password: Password must contain at least {JoinedPasswordError}");
+            if (string.IsNullOrWhiteSpace(Password) && !IsValidatePassword(Password)) errors.Add($"Invalid Password: {JoinedPasswordError}");
+            if (!IsValidatePassword(Password) && !string.IsNullOrWhiteSpace(Password)) errors.Add($"Invalid Password: Password must contain at least {JoinedPasswordError}");
+            if (SelectedImageFolder == null) { errors.Add("Please Select Image Folder."); }
+            if (SelectedImageItem == null) { errors.Add("Please Select Image first before add new record."); }
 
             return errors.Any() ? string.Join("\n", errors) : null;
         }
@@ -934,26 +929,32 @@ namespace Training_Quest3.ViewModel
             {
                 List<string> PasswordError = new List<string>();
 
-                if (!Regex.IsMatch(password, @"[A-Z]"))
+                if (string.IsNullOrWhiteSpace(Password))
                 {
-                    PasswordError.Add("1 uppercase letter");
+                    PasswordError.Add("Password cannot be empty");
                 }
-
-                if (!Regex.IsMatch(password, @"\d"))
+                else
                 {
-                    PasswordError.Add("1 digit");
-                }
+                    if (!Regex.IsMatch(password, @"[A-Z]"))
+                    {
+                        PasswordError.Add("1 uppercase letter");
+                    }
 
-                if (!Regex.IsMatch(password, @"[@#$!%*?&]"))
-                {
-                    PasswordError.Add("1 special character");
-                }
+                    if (!Regex.IsMatch(password, @"\d"))
+                    {
+                        PasswordError.Add("1 digit");
+                    }
 
-                if (password.Length < 8)
-                {
-                    PasswordError.Add("8 characters long");
-                }
+                    if (!Regex.IsMatch(password, @"[@#$!%*?&]"))
+                    {
+                        PasswordError.Add("1 special character");
+                    }
 
+                    if (password.Length < 8)
+                    {
+                        PasswordError.Add("8 characters long");
+                    }
+                }
 
                 JoinedPasswordError = PasswordError.Count > 0 ? string.Join(", ", PasswordError) : null;
 

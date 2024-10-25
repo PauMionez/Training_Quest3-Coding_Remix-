@@ -60,5 +60,8 @@ namespace Training_Quest3.Component
                 passwordBox.Password = Password;
             }
         }
+
+       
+
     }
 }

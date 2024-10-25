@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Training_Quest3"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
         xmlns:vm="clr-namespace:Training_Quest3.ViewModel"
@@ -48,32 +47,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
-        <!--<Style TargetType="PasswordBox" x:Key="PasswordStyle">
-            <Setter Property="Margin" Value="0 5"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="MaxWidth" Value="220"/>
-            <Setter Property="Padding" Value="3"/>
-            <Setter Property="mah:PasswordBoxHelper.CapsLockWarningToolTip" Value="CapsLock is on."/>
-            <Setter Property="mah:TextBoxHelper.Watermark" Value="Password"/>
-            <Style.Triggers>
-                <Trigger Property="IsFocused" Value="True">
-                    <Setter Property="Background" Value="Yellow"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>-->
-
-        <!--<Style TargetType="PasswordBox" x:Key="PasswordStyle">
-            <Setter Property="Background" Value="White"/>
-            <Style.Triggers>
-                <Trigger Property="IsFocused" Value="True">
-                    <Setter Property="Background" Value="Yellow"/>
-                </Trigger>
-                
-                
-            </Style.Triggers>
-        </Style>-->
 
         <Style TargetType="TextBlock" x:Key="LineDecoration">
             <Setter Property="Background" Value="LightGray"/>
@@ -153,9 +126,9 @@
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal">
-                            <!--<StackPanel Orientation="Horizontal">-->
+                            <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Password: " Style="{StaticResource CodingFieldStyle}"/>
-                            <PasswordBox Width="100" Height="25" FontSize="12"
+                            <!--<PasswordBox Width="100" Height="25" FontSize="12"
                                          mah:PasswordBoxHelper.CapsLockWarningToolTip="CapsLock is on."
                                          mah:TextBoxHelper.Watermark="Password"
                                          >
@@ -167,7 +140,7 @@
                                     </Binding>
                                 </mah:PasswordBoxBindingBehavior.Password>
 
-                                <!--<PasswordBox.Style>
+                                --><!--<PasswordBox.Style>
                                     <Style TargetType="PasswordBox" >
                                         <Setter Property="Margin" Value="0 5"/>
                                         <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -180,15 +153,15 @@
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
-                                </PasswordBox.Style>-->
-                            </PasswordBox>
+                                </PasswordBox.Style>--><!--
+                            </PasswordBox>-->
 
-                            <!--<components:BindablePasswordBox x:Name="PasswordBox" Margin="0 0 10 10" Width="100" Height="25"
+                            <components:BindablePasswordBox x:Name="PasswordBox" Margin="0 0 10 10" Width="100" Height="25"
                                               Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                             </StackPanel>
                             <StackPanel Margin="-115 30 0 0">
                                 <Label Content="{Binding ElementName=PasswordBox, Path=(Validation.Errors)[0].ErrorContent}" FontSize="10" Foreground="Red" />
-                            </StackPanel>-->
+                            </StackPanel>
                         
 
                         </StackPanel>
@@ -196,13 +169,6 @@
                     </StackPanel>
                 </ScrollViewer>
             </Grid>
-
-
-
-
-
-
-
 
 
 
