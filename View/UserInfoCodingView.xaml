@@ -6,7 +6,7 @@
              xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:local="clr-namespace:Training_Quest3.View"
-             xmlns:components="clr-namespace:Training_Quest3.Component"
+             xmlns:components="clr-namespace:Training_Quest3.Component" xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
              mc:Ignorable="d" 
             >
     
@@ -14,84 +14,143 @@
         <dx:EventToCommand EventName="Loaded" Command="{Binding LoadUserCommand}"/>
     </dx:Interaction.Behaviors>
 
-    
-    
+    <UserControl.Resources>
+        <!--Style-->
+        
+            <Style TargetType="TextBlock">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+
+            <!--Coding fields-->
+            <!--Label-->
+            <Style TargetType="TextBlock" x:Key="CodingFieldStyle">
+                <Setter Property="Margin" Value="5 10 5 10"/>
+                <Setter Property="Width" Value="120"/>
+                <Setter Property="TextAlignment" Value="Left"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+            </Style>
+
+            <!--Input field-->
+            <Style TargetType="syncfusion:SfTextBoxExt" x:Key="CodingFieldBoxStyle">
+                <Setter Property="Margin" Value="0 5"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="MaxWidth" Value="220"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+                <Setter Property="Padding" Value="3"/>
+                <Style.Triggers>
+                    <Trigger Property="IsFocused" Value="True">
+                        <Setter Property="Background" Value="Yellow"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style TargetType="TextBlock" x:Key="LineDecoration">
+                <Setter Property="Background" Value="LightGray"/>
+                <Setter Property="Height" Value="2"/>
+                <Setter Property="Margin" Value="6"/>
+            </Style>
+       
+    </UserControl.Resources>
+
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+        <!--Input Section-->
+        <Grid VerticalAlignment="Top" >
+            <StackPanel>
+                <TextBlock Margin="5 10 5 10" TextWrapping="Wrap">
+                    <Run Text="Coding Form: " FontWeight="Bold"/>
+                    <LineBreak/>
+                    <Run Text="{Binding CodingFormStatusText}"/>
+                </TextBlock>
 
-        <TextBlock Text="Add record"
-       Grid.ColumnSpan="2"
-       Background="#FF6161B0" Foreground="White"
-       FontWeight="Bold"
-       VerticalAlignment="Top"
-       Padding="10"
-       Grid.Row="0" />
-
-        <Grid Grid.Row="1" Margin="5">
+            </StackPanel>
             <ScrollViewer>
-                <StackPanel Background="White" >
-                    <!--Name-->
-                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5" >
-                        <TextBlock Text="First Name:" Padding="5" />
-                        <TextBox MinWidth="100" Text="{Binding AddFirstName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Bottom" Width="150" Margin="24 0 0 0"/>
+                <StackPanel Margin="0 30 10 10">
+                    <StackPanel Orientation="Horizontal" x:Name="FirstField">
+                        <TextBlock Text="First Name: " Style="{StaticResource CodingFieldStyle}"/>
+                        <syncfusion:SfTextBoxExt Watermark="First Name" Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodingFieldBoxStyle}" PreviewTextInput="AlphabeticOnly"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5" >
-                        <TextBlock Text="Middle Name:" Padding="5" />
-                        <TextBox MinWidth="100" Text="{Binding AddMiddleName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Bottom" Width="150" Margin="10 0 0 0"/>
+                    <StackPanel Orientation="Horizontal" x:Name="MiddleField">
+                        <TextBlock Text="Middle Name: " Style="{StaticResource CodingFieldStyle}"/>
+                        <syncfusion:SfTextBoxExt Watermark="Middle Name" Text="{Binding MiddleName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodingFieldBoxStyle}" PreviewTextInput="AlphabeticOnly"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0 0 0 10">
-                        <TextBlock Text="Last Name:" Padding="5"/>
-                        <TextBox MinWidth="100" Text="{Binding AddLastName, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Bottom"  Width="150" Margin="26 0 0 0"/>
-                    </StackPanel>
-
-                    <!--Date of Birth-->
-                    <StackPanel Orientation="Horizontal" >
-                        <TextBlock Text="Date Of Birth:" Padding="5"/>
-                        <DatePicker x:Name="Birthday" MinWidth="100" SelectedDate="{Binding AddDateofBirth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="150" Margin="13 0 0 0"/>
+                    <StackPanel Orientation="Horizontal" x:Name="LastField">
+                        <TextBlock Text="Last Name: " Style="{StaticResource CodingFieldStyle}"/>
+                        <syncfusion:SfTextBoxExt Watermark="Last Name" Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodingFieldBoxStyle}" PreviewTextInput="AlphabeticOnly"/>
                     </StackPanel>
 
-                    <!--Age-->
+                    <StackPanel Orientation="Horizontal" x:Name="BirthDateField">
+                        <TextBlock Text="Birth: " Style="{StaticResource CodingFieldStyle}"/>
+                        <syncfusion:SfTextBoxExt Watermark="MM" MaxLength="2" Text="{Binding Birth_month, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodingFieldBoxStyle}" PreviewTextInput="NumericOnly"/>
+                        <syncfusion:SfTextBoxExt Margin="5 0" Watermark="DD" MaxLength="2" Text="{Binding Birth_day, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodingFieldBoxStyle}" PreviewTextInput="NumericOnly"/>
+                        <syncfusion:SfTextBoxExt Watermark="YYYY" Text="{Binding Birth_year, UpdateSourceTrigger=PropertyChanged}" MaxLength="4" Style="{StaticResource CodingFieldBoxStyle}" PreviewTextInput="NumericOnly"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" x:Name="AddressField">
+                        <TextBlock Text="Address: " Style="{StaticResource CodingFieldStyle}"/>
+                        <syncfusion:SfTextBoxExt Watermark="Address" Text="{Binding Address, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodingFieldBoxStyle}" PreviewTextInput="AlphanumericOnly"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" x:Name="FavorAnimalField">
+                        <TextBlock Text="Favorite Animal: " Style="{StaticResource CodingFieldStyle}"/>
+                        <syncfusion:SfTextBoxExt HorizontalAlignment="Center" Style="{StaticResource CodingFieldBoxStyle}"
+                                                      VerticalAlignment="Center" Watermark="Favorite Animals" Height="28"
+                                                      SearchItemPath="FavanimalModel" AutoCompleteMode="Suggest" ShowSuggestionsOnFocus="True"
+                                                      AutoCompleteSource="{Binding Suggestions}" Text="{Binding FavAnimal, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" x:Name="UserNameField">
+                        <TextBlock Text="User Name: " Style="{StaticResource CodingFieldStyle}"/>
+                        <syncfusion:SfTextBoxExt Watermark="User Name" Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource CodingFieldBoxStyle}" PreviewTextInput="AlphanumericOnly"/>
+                    </StackPanel>
+
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Age:" Padding="5"/>
-                        <TextBlock MinWidth="100" Text="{Binding AddAge, UpdateSourceTrigger=PropertyChanged}" FontSize="15" Width="150" Margin="62 2 0 0"/>
-                    </StackPanel>
-
-                    <!--Address-->
-                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Address:" Padding="5"/>
-                        <TextBox Text="{Binding AddAddress, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Bottom" Width="150" Height="50" Margin="40 0 0 0" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap"/>
-                    </StackPanel>
-
-                   
-                    <!--Username-->
-                    <StackPanel Orientation="Horizontal" Margin="0 0 0 5">
-                        <TextBlock Text="Username:" Padding="5"/>
-                        <TextBox MinWidth="100" Text="{Binding AddUserName, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Bottom" Width="150" Margin="29 0 0 0"/>
-                    </StackPanel>
-
-                    <!--Password-->
-                    <StackPanel Orientation="Vertical" >
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Password:" Padding="5"/>
-                            <components:BindablePasswordBox x:Name="PasswordBox" Grid.Column="1" Margin="33,0,0,0" Width="150" 
-                                                        Password="{Binding AddPassword, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                            <TextBlock Text="Password: " Style="{StaticResource CodingFieldStyle}"/>
+                            <!--<PasswordBox Width="100" Height="25" FontSize="12"
+                                         mah:PasswordBoxHelper.CapsLockWarningToolTip="CapsLock is on."
+                                         mah:TextBoxHelper.Watermark="Password"
+                                         >
+                                <mah:PasswordBoxBindingBehavior.Password>
+                                    <Binding Path="Password">
+                                        <Binding.ValidationRules>
+                                            <validationRules:PasswordValidationRule />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </mah:PasswordBoxBindingBehavior.Password>
+
+                                -->
+                            <!--<PasswordBox.Style>
+                                    <Style TargetType="PasswordBox" >
+                                        <Setter Property="Margin" Value="0 5"/>
+                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="MaxWidth" Value="220"/>
+                                        <Setter Property="Padding" Value="3"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsFocused" Value="True">
+                                                <Setter Property="Background" Value="Yellow"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </PasswordBox.Style>-->
+                            <!--
+                            </PasswordBox>-->
+
+                            <components:BindablePasswordBox x:Name="PasswordBox" Margin="0 0 10 10" Width="100" Height="25"
+                                              Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                         </StackPanel>
-                        <StackPanel Margin="93 -1 0 0">
-                            <Label Content="{Binding ElementName=PasswordBox, Path=(Validation.Errors)[0].ErrorContent}" FontSize="12" Foreground="Red" />
+                        <StackPanel Margin="-115 30 0 0">
+                            <Label Content="{Binding ElementName=PasswordBox, Path=(Validation.Errors)[0].ErrorContent}" FontSize="10" Foreground="Red" />
                         </StackPanel>
+
 
                     </StackPanel>
-
-                   
-
-
 
                 </StackPanel>
             </ScrollViewer>
         </Grid>
+
 
 
 
