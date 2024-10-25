@@ -40,6 +40,7 @@
                 <syncfusion:GridTextColumn HeaderText="Favorite Animal" MappingName="FavAnimal" AllowEditing="False"/>
                 <syncfusion:GridTextColumn HeaderText="User Name" MappingName="UserName" AllowEditing="False"/>
                 <syncfusion:GridTextColumn HeaderText="Password" MappingName="Password" AllowEditing="False"/>
+                <syncfusion:GridTextColumn HeaderText="Image Name" MappingName="ImageName" AllowEditing="False"/>
 
             </syncfusion:SfDataGrid.Columns>
         </syncfusion:SfDataGrid>

@@ -10,7 +10,7 @@
         <ListView Name="listViewControl" ItemsSource="{Binding ImageListCollection, UpdateSourceTrigger=PropertyChanged}" 
                   SelectedItem="{Binding SelectedImageItem}" SelectedIndex="{Binding SelectedImageIndex}" Grid.Column="1">
             <dx:Interaction.Behaviors>
-                <dx:EventToCommand EventName="SelectionChanged" Command="{Binding ImageListSelectionChangedCommand}" PassEventArgsToCommand="True"/>
+                <dx:EventToCommand EventName="SelectionChanged" Command="{Binding ImageListSelectionChangedCommand}"/>
             </dx:Interaction.Behaviors>
 
             <ListView.ItemTemplate>

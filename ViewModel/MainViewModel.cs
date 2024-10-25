@@ -24,7 +24,6 @@ using System.Windows.Media.Imaging;
 using Training_Quest3.DataBase;
 using Training_Quest3.Model;
 using ColorConverter = System.Windows.Media.ColorConverter;
-using SelectionChangedEventArgs = System.Windows.Controls.SelectionChangedEventArgs;
 
 namespace Training_Quest3.ViewModel
 {
@@ -44,7 +43,7 @@ namespace Training_Quest3.ViewModel
         public AsyncCommand SelectImageFolderCommand { get; private set; }
         public AsyncCommand AddImageCommand { get; private set; }
         public AsyncCommand DeleteImageCommand { get; private set; }
-        public AsyncCommand<SelectionChangedEventArgs> ImageListSelectionChangedCommand { get; private set; }
+        public AsyncCommand ImageListSelectionChangedCommand { get; private set; }
         public DelegateCommand<MouseWheelEventArgs> ImageScaleMouseWheelCommand { get; private set; }
 
 
@@ -77,7 +76,7 @@ namespace Training_Quest3.ViewModel
 
             #region Image Command Initial
             SelectImageFolderCommand = new AsyncCommand(SelectImageFolderAsync);
-            ImageListSelectionChangedCommand = new AsyncCommand<SelectionChangedEventArgs>(ImageListSelectionChangedAsync);
+            ImageListSelectionChangedCommand = new AsyncCommand(ImageListSelectionChangedAsync);
             AddImageCommand = new AsyncCommand(AddImageAsync);
             DeleteImageCommand = new AsyncCommand(DeleteImageAsync);
             ImageScaleMouseWheelCommand = new DelegateCommand<MouseWheelEventArgs>(ImageScaleMouseWheelChanged);
@@ -229,7 +228,6 @@ namespace Training_Quest3.ViewModel
 
         #region ImageViewer Fields
 
-        private readonly string TRANSPARENT_COLOR = "Transparent";
         Canvas CanvasControl;
         private double ImageDPI = 0;
         private const string Pdf_Color = "Red";
@@ -351,9 +349,10 @@ namespace Training_Quest3.ViewModel
 
         #region Coding Fields 
         public ObservableCollection<SuggestionModel> Suggestions { get; set; }
-        public string JoinedPasswordError { get; private set; }
-        private string _selectedSuggestfile;
         private DirectoryInfo SaveDirectory { get; set; }
+        private string _selectedSuggestfile;
+        public string JoinedPasswordError { get; private set; }
+        public bool IsUpdating = false;
 
         // Directory Fields
         private readonly string DesktopDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
@@ -382,6 +381,25 @@ namespace Training_Quest3.ViewModel
                     return;
                 }
 
+                if (IsUpdating)
+                {
+                    WarningMessage($"You can Add new Record while updating", "Validation Errors");
+                    ResetAddRecordInputs();
+                    LoadPlaceholderImage();
+                    IsUpdating = false;
+                    return;
+                }
+                if (SelectedImageFolder == null)
+                {
+                    WarningMessage("Please Select Image Folder.", "Validation Error");
+                    return;
+                }
+
+                if (SelectedImageItem == null)
+                {
+                    WarningMessage("Please Select Image first before add new record.", "Validation Error");
+                    return;
+                }
                 #endregion
 
                 // Collect data
@@ -397,11 +415,18 @@ namespace Training_Quest3.ViewModel
                     FavAnimal = FavAnimal,
                     UserName = UserName,
                     Password = Password,
+                    ImageName = SelectedImageItem.FileName,
 
                 };
 
                 //Confirmation 
                 if (YesNoDialog("Do you want to add this new record?") != MessageBoxResult.Yes) { return; }
+
+                //Add the Favorite Animal if the input is not in suggestion list
+                if (!Suggestions.Any(s => s.FavanimalModel.Equals(FavAnimal, StringComparison.OrdinalIgnoreCase)))
+                {
+                    Suggestions.Add(new SuggestionModel { FavanimalModel = FavAnimal });
+                }
 
                 using (DBContext db = new DBContext())
                 {
@@ -477,6 +502,7 @@ namespace Training_Quest3.ViewModel
                         if (_selectedSuggestfile.EndsWith(".txt"))
                         {
                             string[] lines = File.ReadAllLines(_selectedSuggestfile);
+
                             foreach (string line in lines)
                             {
                                 Suggestions.Add(new SuggestionModel { FavanimalModel = line });
@@ -493,7 +519,7 @@ namespace Training_Quest3.ViewModel
 
                                 int rowCount = ws.Rows.Count();
 
-                                //Assuming data is in the first row and Column
+                                //Assuming data is in the first row and Column / no header
                                 for (int row = 1; row <= rowCount; row++)
                                 {
                                     string suggestion = ws[row, 1].Value.ToString();
@@ -504,6 +530,7 @@ namespace Training_Quest3.ViewModel
                                 }
                             }
                         }
+
 
                         // Sort the collection
                         SortCollection(Suggestions, e => e.FavanimalModel);
@@ -569,6 +596,7 @@ namespace Training_Quest3.ViewModel
                         user.FavAnimal = FavAnimal;
                         user.UserName = UserName;
                         user.Password = Password;
+                        user.ImageName = SelectedImageItem.FileName;
 
                         // Save changes
                         await db.SaveChangesAsync();
@@ -651,7 +679,7 @@ namespace Training_Quest3.ViewModel
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        private Task LoadDataAgain(UserInfoModel data)
+        private async Task<Task> LoadDataAgain(UserInfoModel data)
         {
             try
             {
@@ -666,6 +694,23 @@ namespace Training_Quest3.ViewModel
                 UserName = data.UserName;
                 Password = data.Password;
 
+
+                //Find the corresponding image item in ImageListCollection
+                SelectedImageItem = ImageListCollection.FirstOrDefault(item => item.FileName == data.ImageName);
+
+                //Show the image frome selected retrieved data
+                if (SelectedImageItem != null)
+                {
+                    await ImageListSelectionChangedAsync();
+                }
+                else
+                {
+                    WarningMessage($"Image From The Record Not Exist in Folder {SelectedImageFolder}.");
+                    ResetAddRecordInputs();
+                    LoadPlaceholderImage();
+                }
+
+                IsUpdating = true;
                 return Task.CompletedTask;
             }
             catch (Exception ex)
@@ -1002,8 +1047,10 @@ namespace Training_Quest3.ViewModel
                     ImageListModel newImageItem = new ImageListModel
                     {
                         FullPath = selectedFilePath,
-                        Color = TRANSPARENT_COLOR
                     };
+
+                    //Set the color based on file type
+                    newImageItem.Color = newImageItem.FullPath.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) ? Pdf_Color : Image_Color;
 
                     ImageListCollection.Add(newImageItem);
 
@@ -1012,7 +1059,7 @@ namespace Training_Quest3.ViewModel
 
                     await Task.CompletedTask;
 
-                    
+
                 }
             }
             catch (Exception ex)
@@ -1085,21 +1132,14 @@ namespace Training_Quest3.ViewModel
                         });
                     }
 
-                    
+
                     // Sort the collection
                     SortCollection(ImageListCollection, e => e.FullPath);
 
                     List<ImageListModel> pdfFiles = ImageListCollection.Where(file => file.FullPath.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase)).ToList();
                     foreach (ImageListModel file in ImageListCollection)
                     {
-                        if (file.FullPath.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
-                        {
-                            file.Color = Pdf_Color;
-                        }
-                        else
-                        {
-                            file.Color = Image_Color;
-                        }
+                        file.Color = file.FullPath.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase) ? Pdf_Color : Image_Color;
                     }
                 }
                 else
@@ -1124,7 +1164,7 @@ namespace Training_Quest3.ViewModel
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        private async Task ImageListSelectionChangedAsync(SelectionChangedEventArgs args)
+        private async Task ImageListSelectionChangedAsync()
         {
             try
             {
@@ -1139,46 +1179,11 @@ namespace Training_Quest3.ViewModel
                 //Handle PDF files
                 if (Path.GetExtension(filePath).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
                 {
-                    using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    {
-                        using (var document = PdfiumViewer.PdfDocument.Load(fs))
-                        {
-                            if (document.PageCount > 0)
-                            {
-                                //Render the first page at 300 DPI
-                                var image = document.Render(0, 300, 300, true);
-
-                                using (MemoryStream ms = new MemoryStream())
-                                {
-                                    image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                                    ms.Seek(0, SeekOrigin.Begin);
-
-                                    SelectedImageSource = CreateBitmapSource(ms);
-                                    SetImageProperties(image);
-                                }
-                            }
-                        }
-                    }
+                    await LoadSelectedPDFFile(filePath);
                 }
                 else
                 {
-                    //Handle image files
-                    byte[] imageData;
-                    int bufferSize = 4096;
-                    using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize * 3, useAsync: true))
-                    {
-                        imageData = new byte[fs.Length];
-                        await fs.ReadAsync(imageData, 0, (int)fs.Length);
-                    }
-
-                    using (MemoryStream ms = new MemoryStream(imageData))
-                    {
-                        SelectedImageSource = CreateBitmapSource(ms);
-                    }
-                    using (Bitmap image = new Bitmap(filePath))
-                    {
-                        SetImageProperties(image);
-                    }
+                    await LoadSelectedImageFile(filePath);
                 }
             }
             catch (IOException)
@@ -1192,19 +1197,83 @@ namespace Training_Quest3.ViewModel
         }
 
         /// <summary>
-        /// BitmapSource for image and pdf
+        /// Load Pdf file in image viewer using pdfiumviewer 
         /// </summary>
-        /// <param name="stream"></param>
+        /// <param name="pdfFilePath"></param>
         /// <returns></returns>
-        private BitmapImage CreateBitmapSource(Stream stream)
+        private async Task LoadSelectedPDFFile(string pdfFilePath)
         {
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.StreamSource = stream;
-            bitmap.EndInit();
-            bitmap.Freeze();
-            return bitmap;
+            if (string.IsNullOrWhiteSpace(pdfFilePath)) return;
+
+            await Task.Run(() =>
+            {
+                using (FileStream fs = new FileStream(pdfFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    using (var document = PdfiumViewer.PdfDocument.Load(fs))
+                    {
+                        if (document.PageCount > 0)
+                        {
+                            //Render the first page at 300 DPI
+                            var image = document.Render(0, 300, 300, true);
+
+                            using (MemoryStream ms = new MemoryStream())
+                            {
+                                image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                                ms.Seek(0, SeekOrigin.Begin);
+
+                                BitmapImage bitmap = new BitmapImage();
+                                bitmap.BeginInit();
+                                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                                bitmap.StreamSource = ms;
+                                bitmap.EndInit();
+                                bitmap.Freeze();
+                                SelectedImageSource = bitmap;
+
+                                SetImageProperties(image);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        /// <summary>
+        /// Load Image file in image viewer
+        /// </summary>
+        /// <param name="imageFilePath"></param>
+        /// <returns></returns>
+        private async Task LoadSelectedImageFile(string imageFilePath)
+        {
+            if (string.IsNullOrWhiteSpace(imageFilePath)) return;
+
+            byte[] imageData;
+            int bufferSize = 4096;
+
+            await Task.Run(async () =>
+            {
+                // Open the file with read access and shared read access for safe access
+                using (FileStream fs = new FileStream(imageFilePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize * 3, useAsync: true))
+                {
+                    imageData = new byte[fs.Length];
+                    await fs.ReadAsync(imageData, 0, (int)fs.Length);
+                }
+
+                //Load the image from the byte array into a MemoryStream
+                using (MemoryStream ms = new MemoryStream(imageData))
+                {
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.StreamSource = ms;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
+                    SelectedImageSource = bitmap;
+                }
+                using (Bitmap image = new Bitmap(imageFilePath))
+                {
+                    SetImageProperties(image);
+                }
+            });
         }
 
         /// <summary>
@@ -1341,7 +1410,14 @@ namespace Training_Quest3.ViewModel
                 string placeholderPath = @"Asset/ImagePlaceHolder.png";
                 using (FileStream fs = new FileStream(placeholderPath, FileMode.Open, FileAccess.Read))
                 {
-                    SelectedImageSource = CreateBitmapSource(fs);
+
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.StreamSource = fs;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
+                    SelectedImageSource = bitmap;
 
                     ImageHeight = 2100;
                     ImageWidth = 2100;

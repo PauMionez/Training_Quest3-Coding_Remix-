@@ -23,6 +23,7 @@ namespace Training_Quest3.Model
         public string FavAnimal { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
+        public string ImageName { get; set; }
 
         [NotMapped]
         public string FullName { get { return $"{FirstName} {MiddleName} {LastName}".Trim(); } }
